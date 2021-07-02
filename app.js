@@ -11,12 +11,15 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb+srv://tommy:123456abc@cluster0.lkrga.mongodb.net/test";
 //mongodb+srv://TuanDuyNGU:150623@cluster0.13z7h.mongodb.net/DuyNguyenDB
 //mongodb+srv://tommy:123456abc@cluster0.lkrga.mongodb.net/test
+
+var img = require('path').join(__dirname, '/img');
+app.use(express.static(img));
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('index');//dg dan trang index
 })
 
 app.get('/login', (req, res) => {
-    res.render('login')
+    res.render('login')//dg dan trang login
 })
 app.post('/dologin', async (req, res) => {
     const nameInput = req.body.txtName;
@@ -24,15 +27,16 @@ app.post('/dologin', async (req, res) => {
 
     const client = await MongoClient.connect(url);
     const dbo = client.db(dbName);
-    const user = await dbo.collection("users").find({ $and: [{usrename:nameInput},{password: passInput}]});
+    const user = await dbo.collection("users").
+        findOne({ $and: [{ name: nameInput }, { password: passInput }] });
     var messageStatus;
     console.log(user);
     if (user != null) {
-        messageStatus = "login oke!";
+        messageStatus = 'login oke!';
     } else {
-        messageStatus = "login Failed!";
+        messageStatus = 'login Failed!';
     }
-    res.render('index', {mgs:messageStatus})
+    res.render('index', {msg: messageStatus })
 });
 const dbName = "DoQuocBinhDB";
 app.post('/register', async (req, res) => {
